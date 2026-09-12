@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: awseks-app
+  labels:
+    app: kmeans-insurance
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kmeans-insurance
+  template:
+    metadata:
+      labels:
+        app: kmeans-insurance
+    spec:
+      containers:
+      - name: kmeans-flask
+        image: 659613508664.dkr.ecr.us-west-1.amazonaws.com/awseks:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kmeans-insurance-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: kmeans-insurance
